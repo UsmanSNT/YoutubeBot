@@ -52,10 +52,10 @@ class Config:
 
         # Video and audio formats
         self.VIDEO_FORMATS: Dict[str, Dict[str, str]] = {
-            "SD": {"label": "SD (480p)", "format": "best[height<=480]"},
-            "HD": {"label": "HD (720p)", "format": "best[height<=720]"},
-            "FHD": {"label": "Full HD (1080p)", "format": "best[height<=1080]"},
-            "ORIGINAL": {"label": "Original (Max Quality)", "format": "best"},
+            "SD": {"label": "SD (480p)", "format": "bestvideo[height<=480]+bestaudio/best[height<=480]"},
+            "HD": {"label": "HD (720p)", "format": "bestvideo[height<=720]+bestaudio/best[height<=720]"},
+            "FHD": {"label": "Full HD (1080p)", "format": "bestvideo[height<=1080]+bestaudio/best[height<=1080]"},
+            "ORIGINAL": {"label": "Original (Max Quality)", "format": "bestvideo+bestaudio/best"},
         }
         self.AUDIO_FORMAT: Dict[str, Dict[str, str]] = {"MP3": {"label": "MP3 (320kbps)", "format": "bestaudio/best"}}
 

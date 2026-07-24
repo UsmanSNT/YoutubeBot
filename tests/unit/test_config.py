@@ -48,10 +48,10 @@ def test_video_formats():
     assert "format" in VIDEO_FORMATS["ORIGINAL"]
 
     # Check specific format settings
-    assert VIDEO_FORMATS["SD"]["format"] == "best[height<=480]"
-    assert VIDEO_FORMATS["HD"]["format"] == "best[height<=720]"
-    assert VIDEO_FORMATS["FHD"]["format"] == "best[height<=1080]"
-    assert VIDEO_FORMATS["ORIGINAL"]["format"] == "best"
+    assert VIDEO_FORMATS["SD"]["format"] == "bestvideo[height<=480]+bestaudio/best[height<=480]"
+    assert VIDEO_FORMATS["HD"]["format"] == "bestvideo[height<=720]+bestaudio/best[height<=720]"
+    assert VIDEO_FORMATS["FHD"]["format"] == "bestvideo[height<=1080]+bestaudio/best[height<=1080]"
+    assert VIDEO_FORMATS["ORIGINAL"]["format"] == "bestvideo+bestaudio/best"
 
 
 def test_audio_format():
