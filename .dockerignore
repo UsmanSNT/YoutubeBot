@@ -1,0 +1,67 @@
+# Version control
+.git
+.gitignore
+
+# Python virtual environments
+.venv
+venv
+env
+
+# Python compiled files
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.so
+
+# Testing and coverage
+.pytest_cache
+htmlcov
+.coverage
+.coverage.*
+.tox
+
+# IDE and editor files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Claude Code and AI tools
+.claude
+
+# Logs
+*.log
+logs/
+
+# Docker files (avoid recursive copying)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Development and build files
+.mypy_cache
+.ruff_cache
+dist/
+build/
+*.egg-info/
+
+# Environment files (security)
+.env
+.env.local
+.env.*.local
+
+# Documentation and README files
+README.md
+*.md
+docs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp

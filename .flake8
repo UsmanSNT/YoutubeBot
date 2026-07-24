@@ -1,0 +1,62 @@
+[flake8]
+# Base configuration for flake8 with wemake-python-styleguide
+max-line-length = 120
+select = C,E,F,W,B,I,WPS
+exclude =
+    .git
+    __pycache__
+    .venv
+    .pytest_cache
+    .mypy_cache
+    .ruff_cache
+    htmlcov
+    .coverage
+
+# Specific wemake-python-styleguide configuration
+max-complexity = 10
+max-module-members = 10
+max-local-variables = 8
+max-arguments = 6
+max-returns = 5
+max-methods = 8
+max-line-complexity = 15
+max-cognitive-score = 15
+max-cognitive-average = 10
+
+# Ignoring some errors from wemake-python-styleguide to make it work with the existing codebase
+ignore =
+    # Allow fixtures without return type annotations in tests
+    WPS442
+    # Allow multiple await expressions in coroutines (useful for async code)
+    WPS217
+    # Allow f-strings
+    WPS305
+    # Allow @classmethod decorator for tests
+    WPS604
+    # Allow triple quotes for docstrings
+    WPS462
+    # Allow multiline strings (common in tests)
+    WPS462
+    # Allow too many imports in test files
+    WPS201
+    # Allow nested classes for Meta in models
+    WPS431
+    # Allow lambda expressions
+    WPS411
+    # Allow magic numbers in tests
+    WPS432
+    # Allow overuse of string literals in tests and configs
+    WPS226
+    # Allow module level mutable constants in tests
+    WPS407
+    # Allow module short names in tests
+    WPS111
+
+# Per-file ignores for specific parts of the codebase
+per-file-ignores =
+    # Allow various test-specific exemptions
+    tests/*:WPS118,WPS202,WPS204,WPS210,WPS211,WPS218,WPS226,WPS432,WPS437,WPS442
+    # Allow more imports and complexity in main modules
+    bot/main.py:WPS201,WPS213
+    # Allow more module members and string literals in config files
+    bot/config.py:WPS226,WPS407

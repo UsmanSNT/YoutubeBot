@@ -1,0 +1,216 @@
+[project]
+name = "VideoGrabberBot"
+version = "0.1.0"
+description = "Telegram bot for downloading videos and audio from YouTube"
+readme = "README.md"
+requires-python = ">=3.13"
+license = "MIT"
+dependencies = [
+    "aiogram>=3.19.0",
+    "aiosqlite>=0.21.0",
+    "loguru>=0.7.3",
+    "python-dotenv>=1.1.0",
+    "yt-dlp>=2026.2.4",
+]
+
+[project.optional-dependencies]
+dev = [
+    "mypy>=1.15.0",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=0.26.0",
+    "pytest-cov>=5.0.0",
+    "pytest-mock>=3.14.0",
+    "pytest-xdist>=3.5.0",             # Parallel test execution
+    "pytest-timeout>=2.2.0",           # Test timeouts
+    "pytest-sugar>=1.0.0",             # Better test output with colors and progress
+    "pytest-profiling>=1.7.0",         # Performance profiling for tests
+    "ruff>=0.11.2",
+    "wemake-python-styleguide>=1.1.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["bot"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+# Configure asyncio mode for better handling of async tests
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+# Test logging configuration
+log_cli = true
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s [%(levelname)8s] %(message)s"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+
+# Minimum pytest version required
+minversion = "8.3.0"
+
+# Timeout for async tests (seconds)
+timeout = 30
+
+# Improve test execution and reporting
+# (Note: xvs option was renamed for clarity)
+addopts = [
+    "--strict-markers",  # Ensure all markers are registered
+    "--strict-config",   # Ensure no unknown config options
+    "--no-header",       # Reduce clutter in output
+    "--tb=short",        # Shorter traceback format
+    "--showlocals",      # Show local variables in tracebacks
+    "--doctest-modules", # Test doctests in modules
+    "-ra",               # Show summary of all results (skipped, failed, etc.)
+    "--durations=5",     # Show 5 slowest tests
+    "-nauto",            # Auto parallel execution with pytest-xdist
+    "--dist=loadgroup",  # Distribute by group markers for better test isolation
+]
+
+# Parallel execution configuration for pytest-xdist  
+# Integration tests run sequentially to avoid race conditions with shared global state
+
+# Define markers for better organization
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
+    "unit: marks tests as unit tests",
+    "smoke: marks tests as smoke tests for quick validation",
+    "formats: formats module tests",
+    "storage: storage module tests",
+    "queue: queue module tests",
+    "downloader: downloader module tests",
+]
+
+# Note: For parallel test execution using pytest-xdist, use:
+# -n auto (auto-detect CPU count)
+# -n 4 (use 4 processes)
+# --dist=loadscope (distribute tests by module)
+
+# Silence common warnings that aren't relevant
+filterwarnings = [
+    "ignore::DeprecationWarning:aiogram.*:",
+    "ignore::DeprecationWarning:pytest_asyncio.*:",
+]
+
+# Note: To improve test randomization, install pytest-random-order plugin
+# and use the following CLI options:
+# --random-order (randomize test order)
+# --random-order-bucket=module (organize randomization by module)
+# --random-order-seed=<value> (set specific seed to reproduce order)
+
+# Cache setup for improved test performance
+cache_dir = ".pytest_cache"
+
+[tool.coverage.run]
+source = ["bot"]
+omit = ["*/__init__.py", "*/tests/*"]
+branch = true                                      # Enable branch coverage
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "pass",
+    "raise ImportError",
+    "except ImportError:",
+]
+precision = 2
+show_missing = true
+fail_under = 85 # Enforce minimum coverage percentage
+
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_configs = true
+disallow_any_generics = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+strict_optional = true
+
+# Ignore missing stubs for third-party libraries
+[[tool.mypy.overrides]]
+module = "yt_dlp"
+ignore_missing_imports = true
+
+# Ignore aiogram type issues - safe to ignore for this project
+# since these are due to internal aiogram types
+[[tool.mypy.overrides]]
+module = "bot.handlers.*"
+disable_error_code = ["union-attr"]
+
+# Ignore specific errors in downloader.py
+[[tool.mypy.overrides]]
+module = "bot.services.downloader"
+disable_error_code = ["call-arg"]
+
+# Ignore test code
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+disable_error_code = [
+    "arg-type",
+    "index",
+    "operator",
+    "method-assign",
+    "union-attr",
+]
+
+# Ignore mypy errors in main entry point file
+[[tool.mypy.overrides]]
+module = "run"
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+
+[tool.ruff]
+# Ruff config
+preview = true
+fix = true
+target-version = "py313"
+line-length = 120
+
+[tool.ruff.format]
+quote-style = "double"
+docstring-code-format = false
+
+[tool.ruff.lint]
+# Basic Ruff configuration
+select = [
+    "E", # pycodestyle
+    "F", # pyflakes
+    "B", # flake8-bugbear
+    "W", # pycodestyle warnings
+    "I", # isort
+]
+external = ["WPS"]
+
+# Exclude some directories from Ruff
+exclude = [
+    ".git",
+    ".ruff_cache",
+    ".venv",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["bot"]
+
+[dependency-groups]
+dev = [
+    "deptry>=0.23.1",
+    "pytest-xdist>=3.6.1",
+    "vulture>=2.14",
+]

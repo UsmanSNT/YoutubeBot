@@ -1,0 +1,30 @@
+services:
+  videograbber-bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: videograbber-bot
+    restart: unless-stopped
+    
+    environment:
+      - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+      - ADMIN_USER_ID=${ADMIN_USER_ID}
+      - DB_PATH=/app/data/bot.db
+      - DATA_DIR=/app/data
+      - TEMP_DIR=/app/data/temp
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - PYTHONUNBUFFERED=1
+    
+    volumes:
+      - bot_data:/app/data
+      - bot_logs:/app/logs
+    
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.path.append('/app'); import bot.config; print('OK')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  bot_data:
+  bot_logs:
