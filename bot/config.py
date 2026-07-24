@@ -36,6 +36,7 @@ class Config:
         self.DATA_DIR = self.BASE_DIR / "data"
         self.TEMP_DIR = self.DATA_DIR / "temp"
         self.DB_PATH = self.DATA_DIR / "bot.db"
+        self.COOKIES_FILE = self.DATA_DIR / "cookies.txt"
 
         # Download configuration
         self.MAX_FILE_SIZE = int(os.getenv("MAX_FILE_SIZE", str(50 * 1024 * 1024)))  # 50MB Bot API limit
@@ -121,6 +122,7 @@ BASE_DIR = config.BASE_DIR
 DATA_DIR = config.DATA_DIR
 TEMP_DIR = config.TEMP_DIR
 DB_PATH = config.DB_PATH
+COOKIES_FILE = config.COOKIES_FILE
 MAX_FILE_SIZE = config.MAX_FILE_SIZE
 DOWNLOAD_TIMEOUT = config.DOWNLOAD_TIMEOUT
 VIDEO_FORMATS = config.VIDEO_FORMATS

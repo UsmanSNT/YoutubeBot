@@ -68,7 +68,7 @@ async def _create_or_update_status_message(
 
 def _create_ydl_options(format_string: str, temp_download_path: Path) -> Dict[str, Any]:
     """Create yt-dlp options dictionary with minimal optimizations."""
-    return {
+    ydl_opts: Dict[str, Any] = {
         "format": format_string,
         "outtmpl": str(temp_download_path / "%(title)s.%(ext)s"),
         "noplaylist": True,
@@ -85,6 +85,13 @@ def _create_ydl_options(format_string: str, temp_download_path: Path) -> Dict[st
         "socket_timeout": 30,
         "retries": 2,
     }
+
+    # Use browser-exported cookies if present, to work around YouTube's
+    # bot-detection challenge on datacenter/cloud IP addresses.
+    if config.COOKIES_FILE.exists():
+        ydl_opts["cookiefile"] = str(config.COOKIES_FILE)
+
+    return ydl_opts
 
 
 def _sync_download_video_file(
