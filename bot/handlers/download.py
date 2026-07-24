@@ -226,6 +226,7 @@ async def _process_download_request(
             format_string=format_data["format"],
             status_message_id=status_message.message_id,
             additional_data={"bot": bot, "url_id": url_id},
+            is_audio=format_data.get("type") == "audio",
         )
         queue_position = await download_queue.add_task(task)
 

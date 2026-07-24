@@ -23,6 +23,7 @@ class DownloadTask:
     format_string: str
     status_message_id: Optional[int] = None
     additional_data: Optional[Dict[str, Any]] = None
+    is_audio: bool = False
 
 
 class DownloadQueue:
@@ -187,6 +188,7 @@ class DownloadQueue:
             self.current_task.chat_id,
             self.current_task.url,
             self.current_task.format_string,
+            is_audio=self.current_task.is_audio,
         )
 
         logger.info(f"Task completed: {task_url}")

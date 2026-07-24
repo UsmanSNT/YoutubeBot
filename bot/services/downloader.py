@@ -66,7 +66,7 @@ async def _create_or_update_status_message(
     return await bot.send_message(chat_id, status_text)
 
 
-def _create_ydl_options(format_string: str, temp_download_path: Path) -> Dict[str, Any]:
+def _create_ydl_options(format_string: str, temp_download_path: Path, is_audio: bool = False) -> Dict[str, Any]:
     """Create yt-dlp options dictionary with minimal optimizations."""
     ydl_opts: Dict[str, Any] = {
         "format": format_string,
@@ -90,6 +90,15 @@ def _create_ydl_options(format_string: str, temp_download_path: Path) -> Dict[st
     # bot-detection challenge on datacenter/cloud IP addresses.
     if config.COOKIES_FILE.exists():
         ydl_opts["cookiefile"] = str(config.COOKIES_FILE)
+
+    if is_audio:
+        ydl_opts["postprocessors"] = [
+            {
+                "key": "FFmpegExtractAudio",
+                "preferredcodec": "mp3",
+                "preferredquality": "320",
+            }
+        ]
 
     return ydl_opts
 
@@ -255,11 +264,17 @@ async def _send_downloaded_file(
 
 
 async def _execute_download_process(
-    bot: Bot, chat_id: int, url: str, format_string: str, temp_download_path: Path, status_message_id: Optional[int]
+    bot: Bot,
+    chat_id: int,
+    url: str,
+    format_string: str,
+    temp_download_path: Path,
+    status_message_id: Optional[int],
+    is_audio: bool = False,
 ) -> None:
     """Execute the main download process."""
     status_message = await _create_or_update_status_message(bot, chat_id, url, status_message_id)
-    ydl_opts = _create_ydl_options(format_string, temp_download_path)
+    ydl_opts = _create_ydl_options(format_string, temp_download_path, is_audio)
     file_path, video_info = await _download_video_file(url, ydl_opts, temp_download_path)
     await _send_downloaded_file(bot, chat_id, file_path, video_info, status_message)
 
@@ -323,6 +338,7 @@ async def download_youtube_video(
     format_string: str = "best",
     temp_dir: Optional[Path] = None,
     status_message_id: Optional[int] = None,
+    is_audio: bool = False,
 ) -> None:
     """
     Download YouTube video and send it to the user.
@@ -334,6 +350,7 @@ async def download_youtube_video(
         format_string: yt-dlp format string
         temp_dir: Directory to store temporary files, defaults to config.TEMP_DIR
         status_message_id: ID of the status message to update
+        is_audio: Whether to extract and convert the download to MP3
 
     Raises:
         DownloadError: If downloading or sending fails
@@ -347,7 +364,9 @@ async def download_youtube_video(
     logger.info(f"Starting download: {url} with format: {format_string} for chat_id: {chat_id}")
 
     try:
-        await _execute_download_process(bot, chat_id, url, format_string, temp_download_path, status_message_id)
+        await _execute_download_process(
+            bot, chat_id, url, format_string, temp_download_path, status_message_id, is_audio
+        )
     except Exception as e:
         await _handle_download_error(bot, chat_id, url, e)
         raise DownloadError(f"Error downloading video: {str(e)}") from e
