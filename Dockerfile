@@ -4,7 +4,14 @@ FROM python:3.13-slim
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     ffmpeg \
+    curl \
+    unzip \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Deno so yt-dlp can run YouTube's JS signature/PO-token challenges
+# locally instead of failing to resolve playable format URLs
+RUN curl -fsSL https://deno.land/install.sh | DENO_INSTALL=/usr/local sh -s -- -y
 
 # Create non-root user for security
 RUN useradd --create-home --shell /bin/bash bot
