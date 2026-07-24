@@ -37,6 +37,8 @@ class MockBotSetup:
         self.bot.send_message = self.mocker.AsyncMock(return_value=self.message_mock)
         self.bot.edit_message_text = self.mocker.AsyncMock()
         self.bot.send_document = self.mocker.AsyncMock()
+        self.bot.send_video = self.mocker.AsyncMock()
+        self.bot.send_audio = self.mocker.AsyncMock()
         return self.bot
 
 
@@ -162,7 +164,7 @@ async def test_download_youtube_video_success(bot_setup, ydl_setup, fs_setup):
         # Verify the calls
         bot.send_message.assert_called_once()
         assert bot.edit_message_text.call_count == 2
-        bot.send_document.assert_called_once()
+        bot.send_video.assert_called_once()
 
 
 @pytest.mark.asyncio
@@ -191,7 +193,7 @@ async def test_download_youtube_video_with_status_message(bot_setup, ydl_setup, 
         # Verify edit_message_text was called instead of send_message
         bot.send_message.assert_not_called()
         assert bot.edit_message_text.call_count == 3  # Initial + progress + completion
-        bot.send_document.assert_called_once()
+        bot.send_video.assert_called_once()
 
 
 @pytest.mark.asyncio

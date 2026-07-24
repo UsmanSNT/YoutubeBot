@@ -187,7 +187,12 @@ async def _download_video_file(
 
 
 async def _send_downloaded_file(
-    bot: Bot, chat_id: int, file_path: Path, video_info: Dict[str, Any], status_message: Message
+    bot: Bot,
+    chat_id: int,
+    file_path: Path,
+    video_info: Dict[str, Any],
+    status_message: Message,
+    is_audio: bool = False,
 ) -> None:
     """Send downloaded file to user with size validation."""
     # Check file size
@@ -215,14 +220,24 @@ async def _send_downloaded_file(
         return
 
     try:
-        # Send file as document
+        # Send file as a native audio/video message so Telegram can preview and play it
         video_title = video_info.get("title", "Video")
-        await bot.send_document(
-            chat_id,
-            document=FSInputFile(file_path),
-            caption=f"📥 <b>{video_title}</b>\n\nDownloaded from YouTube",
-            request_timeout=300,  # 5 minutes for large files
-        )
+        caption = f"📥 <b>{video_title}</b>\n\nDownloaded from YouTube"
+        if is_audio:
+            await bot.send_audio(
+                chat_id,
+                audio=FSInputFile(file_path),
+                caption=caption,
+                title=video_title,
+                request_timeout=300,  # 5 minutes for large files
+            )
+        else:
+            await bot.send_video(
+                chat_id,
+                video=FSInputFile(file_path),
+                caption=caption,
+                request_timeout=300,  # 5 minutes for large files
+            )
 
         # Update status message on success
         await bot.edit_message_text(
@@ -276,7 +291,7 @@ async def _execute_download_process(
     status_message = await _create_or_update_status_message(bot, chat_id, url, status_message_id)
     ydl_opts = _create_ydl_options(format_string, temp_download_path, is_audio)
     file_path, video_info = await _download_video_file(url, ydl_opts, temp_download_path)
-    await _send_downloaded_file(bot, chat_id, file_path, video_info, status_message)
+    await _send_downloaded_file(bot, chat_id, file_path, video_info, status_message, is_audio)
 
 
 async def _handle_download_error(bot: Bot, chat_id: int, url: str, error: Exception) -> None:
