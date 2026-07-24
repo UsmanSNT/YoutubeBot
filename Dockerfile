@@ -33,9 +33,6 @@ ENV DATA_DIR=/app/data
 ENV TEMP_DIR=/app/data/temp
 ENV DB_PATH=/app/data/bot.db
 
-# Configure volumes for persistent data
-VOLUME ["/app/data"]
-
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD python -c "import sys; sys.path.append('/app'); import bot.config; print('OK')" || exit 1
