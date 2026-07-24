@@ -106,6 +106,11 @@ def _sync_download_video_file(
                 video_info = ydl.extract_info(url, download=False)
             except yt_dlp.utils.DownloadError as e:
                 error_msg = str(e).lower()
+                if "requested format" in error_msg:
+                    raise UnsupportedFormatError(
+                        "Requested quality is not available for this video",
+                        context={"url": url, "original_error": str(e)},
+                    ) from e
                 if "not available" in error_msg or "video not found" in error_msg:
                     raise VideoNotFoundError(
                         "Video not found or unavailable", context={"url": url, "original_error": str(e)}
