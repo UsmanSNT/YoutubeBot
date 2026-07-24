@@ -84,9 +84,6 @@ def _create_ydl_options(format_string: str, temp_download_path: Path) -> Dict[st
         # Shorter timeouts to prevent hanging
         "socket_timeout": 30,
         "retries": 2,
-        # Prefer clients that avoid YouTube's stricter signature/PO-token
-        # challenges on the web client
-        "extractor_args": {"youtube": {"player_client": ["android", "web"]}},
     }
 
     # Use browser-exported cookies if present, to work around YouTube's
